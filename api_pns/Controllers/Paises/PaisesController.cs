@@ -10,18 +10,18 @@ using System;
 using System.Threading.Tasks;
 using api_pns.Models.Countries;
 
-namespace api_pns.Controllers
+namespace api_pns.Controllers.Paises
 {
     [Route("api")]
     [ApiController]
-    public class CountriesController : Controller
+    public class PaisesController : ControllerBase
     {
 
         public Connection conn;
         private readonly IConfiguration _configuration;
         public ReplySucess oReply = new ReplySucess();
 
-        public CountriesController(IConfiguration configuration)
+        public PaisesController(IConfiguration configuration)
         {
             _configuration = configuration;
             conn = new Connection();
@@ -214,12 +214,12 @@ namespace api_pns.Controllers
 
                     await cmd.ExecuteNonQueryAsync();
 
-                    
+
                     r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
-                    r.Status = 200;
+                    r.Status = r.Flag == true ? 200 : 400;
 
-                    oReply.Ok = true;
+                    oReply.Ok = r.Flag;
                     oReply.Message = r.Message;
                     oReply.Data = null;
 

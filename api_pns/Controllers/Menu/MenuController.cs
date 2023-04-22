@@ -9,11 +9,11 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using api_pns.Models.Menu;
 
-namespace api_pns.Controllers
+namespace api_pns.Controllers.Menu
 {
     [Route("api")]
     [ApiController]
-    public class MenuController : Controller
+    public class MenuController : ControllerBase
     {
         public Connection conn;
         private readonly IConfiguration _configuration;

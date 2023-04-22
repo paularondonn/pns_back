@@ -11,11 +11,11 @@ using api_pns.Context;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Rewrite;
 
-namespace api_pns.Controllers
+namespace api_pns.Controllers.InicioSesion
 {
 
     [ApiController]
-    public class LoginController : Controller
+    public class LoginController : ControllerBase
     {
         public Connection conn;
         private readonly IConfiguration _configuration;
@@ -89,9 +89,10 @@ namespace api_pns.Controllers
                         detailsLogin.Add("idHeadquarters", detailsUser.idHeadquarters);
                         detailsLogin.Add("UserName", detailsUser.UserName);
 
-                        r.Data = detailsLogin;
-                        r.Message = "Successful login";
+                        r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
+                        r.Flag = (bool)cmd.Parameters["@flag"].Value;
                         r.Status = 200;
+                        r.Data = detailsLogin;
 
                         oReply.Ok = true;
                         oReply.Message = r.Message;
