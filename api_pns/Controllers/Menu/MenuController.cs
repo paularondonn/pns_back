@@ -92,13 +92,14 @@ namespace api_pns.Controllers.Menu
 
                         return Ok(oReply);
                     }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-
-                    oReply.Ok = false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
-
-                    return Ok(oReply);
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {

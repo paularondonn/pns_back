@@ -71,8 +71,7 @@ namespace api_pns.Controllers.Ciudades
 
                     r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
-                    r.Status = 400;
-
+                    r.Status = r.Flag ? 200 : 400;
 
                     if (r.Flag == true)
                     {
@@ -86,13 +85,14 @@ namespace api_pns.Controllers.Ciudades
 
                         return Ok(oReply);
                     }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-
-                    oReply.Ok = false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
-
-                    return Ok(oReply);
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -154,7 +154,6 @@ namespace api_pns.Controllers.Ciudades
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
                     r.Status = 400;
 
-
                     if (r.Flag)
                     {
                         r.Data = detailCities;
@@ -167,13 +166,14 @@ namespace api_pns.Controllers.Ciudades
 
                         return Ok(oReply);
                     }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-
-                    oReply.Ok = false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
-
-                    return Ok(oReply);
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -245,13 +245,14 @@ namespace api_pns.Controllers.Ciudades
 
                         return Ok(oReply);
                     }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-
-                    oReply.Ok = false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
-
-                    return Ok(oReply);
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -297,16 +298,26 @@ namespace api_pns.Controllers.Ciudades
 
                     await cmd.ExecuteNonQueryAsync();
 
-
                     r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
                     r.Status = r.Flag == true ? 200 : 400;
 
-                    oReply.Ok = r.Flag == true ? true : false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
+                    if (r.Flag)
+                    {
+                        oReply.Ok = r.Flag == true ? true : false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-                    return Ok(oReply);
+                        return Ok(oReply);
+                    }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
+
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {

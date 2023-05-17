@@ -77,7 +77,7 @@ namespace api_pns.Controllers.InicioSesion
 
                     r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
-                    r.Status = 400;
+                    r.Status = r.Flag ? 200 : 400;
 
 
                     if (r.Flag)
@@ -100,13 +100,14 @@ namespace api_pns.Controllers.InicioSesion
 
                         return Ok(oReply);
                     }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-
-                    oReply.Ok = false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
-
-                    return Ok(oReply);
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -166,7 +167,7 @@ namespace api_pns.Controllers.InicioSesion
 
                     r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
-                    r.Status = 400;
+                    r.Status = r.Flag ? 200 : 400;
 
 
                     if (r.Flag)
@@ -181,13 +182,14 @@ namespace api_pns.Controllers.InicioSesion
 
                         return Ok(oReply);
                     }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-
-                    oReply.Ok = false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
-
-                    return Ok(oReply);
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {
