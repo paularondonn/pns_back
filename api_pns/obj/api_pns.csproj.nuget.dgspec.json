@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Maria Paula Rondon\\Downloads\\Me\\proyecto\\pns_back\\api_pns\\api_pns.csproj": {}
+    "C:\\Users\\Equipo\\source\\repos\\pns_back\\api_pns\\api_pns.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Maria Paula Rondon\\Downloads\\Me\\proyecto\\pns_back\\api_pns\\api_pns.csproj": {
+    "C:\\Users\\Equipo\\source\\repos\\pns_back\\api_pns\\api_pns.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Maria Paula Rondon\\Downloads\\Me\\proyecto\\pns_back\\api_pns\\api_pns.csproj",
+        "projectUniqueName": "C:\\Users\\Equipo\\source\\repos\\pns_back\\api_pns\\api_pns.csproj",
         "projectName": "api_pns",
-        "projectPath": "C:\\Users\\Maria Paula Rondon\\Downloads\\Me\\proyecto\\pns_back\\api_pns\\api_pns.csproj",
-        "packagesPath": "C:\\Users\\Maria Paula Rondon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Maria Paula Rondon\\Downloads\\Me\\proyecto\\pns_back\\api_pns\\obj\\",
+        "projectPath": "C:\\Users\\Equipo\\source\\repos\\pns_back\\api_pns\\api_pns.csproj",
+        "packagesPath": "C:\\Users\\Equipo\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Equipo\\source\\repos\\pns_back\\api_pns\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Maria Paula Rondon\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Equipo\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,6 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.302\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -84,6 +81,16 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[3.1.10, 3.1.10]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[3.1.32, 3.1.32]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -92,7 +99,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }
