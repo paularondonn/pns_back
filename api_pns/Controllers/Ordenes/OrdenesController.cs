@@ -146,12 +146,14 @@ namespace api_pns.Controllers.Ordenes
                         if (sqldr["id_take_order"] != DBNull.Value) { data.Add("idTakeOrder", Convert.ToInt32(sqldr["id_take_order"])); } else { data.Add("idTakeOrder", ""); }
                         if (sqldr["id_product"] != DBNull.Value) { data.Add("idProduct", Convert.ToInt32(sqldr["id_product"])); } else { data.Add("idProduct", ""); }
                         if (sqldr["name_product"] != DBNull.Value) { data.Add("nameProduct", sqldr["name_product"].ToString()); } else { data.Add("nameProduct", ""); }
+                        if (sqldr["name_supplier"] != DBNull.Value) { data.Add("nameSupplier", sqldr["name_supplier"].ToString()); } else { data.Add("nameSupplier", ""); }
                         if (sqldr["amount"] != DBNull.Value) { data.Add("amount", Convert.ToInt32(sqldr["amount"])); } else { data.Add("amount", ""); }
+                        if (sqldr["price"] != DBNull.Value) { data.Add("price", Convert.ToInt32(sqldr["price"])); } else { data.Add("price", ""); }
                         if (sqldr["id_table"] != DBNull.Value) { data.Add("idTable", Convert.ToInt32(sqldr["id_table"])); } else { data.Add("idTable", ""); }
                         if (sqldr["name_table"] != DBNull.Value) { data.Add("nameTable", sqldr["name_table"].ToString()); } else { data.Add("nameTable", ""); }
                         if (sqldr["totalValue"] != DBNull.Value) { data.Add("totalValue", sqldr["totalValue"].ToString()); } else { data.Add("totalValue", ""); }
                         if (sqldr["paid"] != DBNull.Value) { data.Add("paid", Convert.ToBoolean(sqldr["paid"])); } else { data.Add("paid", false); }
-
+                        
                         details.Add(data);
                     }
 
