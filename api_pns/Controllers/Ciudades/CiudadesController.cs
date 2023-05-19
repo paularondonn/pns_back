@@ -97,7 +97,7 @@ namespace api_pns.Controllers.Ciudades
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
@@ -178,7 +178,7 @@ namespace api_pns.Controllers.Ciudades
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
@@ -257,7 +257,7 @@ namespace api_pns.Controllers.Ciudades
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
@@ -322,7 +322,7 @@ namespace api_pns.Controllers.Ciudades
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
