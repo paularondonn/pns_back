@@ -78,3 +78,5 @@ C:\Users\Maria Paula Rondon\Downloads\Me\proyecto\pns_back\api_pns\obj\Debug\net
 C:\Users\Maria Paula Rondon\Downloads\Me\proyecto\pns_back\api_pns\obj\Debug\netcoreapp3.1\api_pns.dll
 C:\Users\Maria Paula Rondon\Downloads\Me\proyecto\pns_back\api_pns\obj\Debug\netcoreapp3.1\api_pns.pdb
 C:\Users\Maria Paula Rondon\Downloads\Me\proyecto\pns_back\api_pns\obj\Debug\netcoreapp3.1\api_pns.genruntimeconfig.cache
+C:\Users\Equipo\source\repos\pns_back\api_pns\obj\Debug\netcoreapp3.1\api_pns.dll
+C:\Users\Equipo\source\repos\pns_back\api_pns\obj\Debug\netcoreapp3.1\api_pns.pdb

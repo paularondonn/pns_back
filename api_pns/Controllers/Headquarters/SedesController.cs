@@ -86,13 +86,14 @@ namespace api_pns.Controllers.Headquarters
 
                         return Ok(oReply);
                     }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-
-                    oReply.Ok = false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
-
-                    return Ok(oReply);
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -165,13 +166,14 @@ namespace api_pns.Controllers.Headquarters
 
                         return Ok(oReply);
                     }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
 
-
-                    oReply.Ok = false;
-                    oReply.Message = r.Message;
-                    oReply.Data = null;
-
-                    return Ok(oReply);
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -20,8 +20,8 @@
     {
         public int idProduct { get; set; }
         public string name { get; set; }
-        public int price { get; set; }
-        public int amount { get; set; }
+        public string price { get; set; }
+        public string amount { get; set; }
         public int idSuppliers { get; set; }
 
     }

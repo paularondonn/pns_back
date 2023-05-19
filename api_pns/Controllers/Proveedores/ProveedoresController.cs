@@ -7,38 +7,38 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Threading.Tasks;
 using System;
-using api_pns.Models.Products;
+using api_pns.Models.Suppliers;
 using Microsoft.AspNetCore.Rewrite;
 using System.Runtime.InteropServices;
 
-namespace api_pns.Controllers.Productos
+namespace api_pns.Controllers.Proveedores
 {
     [Route("api")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class SuppliersController : ControllerBase
     {
         public Connection conn;
         private readonly IConfiguration _configuration;
         public ReplySucess oReply = new ReplySucess();
 
-        public ProductsController(IConfiguration configuration)
+        public SuppliersController(IConfiguration configuration)
         {
             _configuration = configuration;
             conn = new Connection();
         }
 
-        #region Listar productos
-        // GET: api/listProducts
+        #region Listar proveedores
+        // GET: api/listSuppliers
         /// <summary>
-        /// Listar productos
+        /// Listar proveedores
         /// </summary>
         /// <remarks>
-        /// Método para listar los productos
+        /// Método para listar los proveedores
         /// </remarks>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpGet]
-        [Route("listProducts")]
-        public async Task<IActionResult> listProducts()
+        [Route("listSuppliers")]
+        public async Task<IActionResult> listSuppliers()
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -48,7 +48,7 @@ namespace api_pns.Controllers.Productos
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_listProducts", connection);
+                    SqlCommand cmd = new SqlCommand("sp_listSuppliers", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
@@ -56,16 +56,15 @@ namespace api_pns.Controllers.Productos
 
                     SqlDataReader sqldr = await cmd.ExecuteReaderAsync();
 
-                    List<ProductsModel> detailProducts = new List<ProductsModel>();
+                    List<SuppliersModel> detailSuppliers = new List<SuppliersModel>();
 
                     while (await sqldr.ReadAsync())
                     {
-                        ProductsModel detailProducts2 = new ProductsModel();
-                        if (sqldr["id_product"] != DBNull.Value) { detailProducts2.idProduct = Convert.ToInt32(sqldr["id_product"]); } else { detailProducts2.idProduct = 0; }
-                        if (sqldr["name"] != DBNull.Value) { detailProducts2.name = sqldr["name"].ToString(); } else { detailProducts2.name = ""; }
-                        if (sqldr["supplier_name"] != DBNull.Value) { detailProducts2.supplierName = sqldr["supplier_name"].ToString(); } else { detailProducts2.supplierName = ""; }
+                        SuppliersModel detailSuppliers2 = new SuppliersModel();
+                        if (sqldr["id_suppliers"] != DBNull.Value) { detailSuppliers2.idSupplier = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailSuppliers2.idSupplier = 0; }
+                        if (sqldr["name"] != DBNull.Value) { detailSuppliers2.name = sqldr["name"].ToString(); } else { detailSuppliers2.name = ""; }
 
-                        detailProducts.Add(detailProducts2);
+                        detailSuppliers.Add(detailSuppliers2);
                     }
 
                     await sqldr.CloseAsync();
@@ -76,8 +75,8 @@ namespace api_pns.Controllers.Productos
 
                     if (r.Flag == true)
                     {
-                        r.Data = detailProducts;
-                        r.Message = "Successful products";
+                        r.Data = detailSuppliers;
+                        r.Message = "Successful Suppliers";
                         r.Status = 200;
 
                         oReply.Ok = true;
@@ -106,19 +105,19 @@ namespace api_pns.Controllers.Productos
         }
         #endregion
 
-        #region Consultar detalle productos
-        // GET: api/consultProducts/{idProduct}
+        #region Consultar detalle proveedores
+        // GET: api/consultSuppliers/{idSupplier}
         /// <summary>
-        /// Consultar detalle del producto
+        /// Consultar detalle del proveedor 
         /// </summary>
         /// <remarks>
-        /// Método para consultar productos
+        /// Método para consultar proveedor
         /// </remarks>
-        /// <param name="idProduct">Identificador del producto a consultar</param>
+        /// <param name="idSupplier">Identificador del proveedor a consultar</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpGet]
-        [Route("consultProducts/{idProduct}")]
-        public async Task<IActionResult> consultProducts([FromRoute] int idProduct)
+        [Route("consultSuppliers/{idSupplier}")]
+        public async Task<IActionResult> consultSuppliers([FromRoute] int idSupplier)
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -128,22 +127,21 @@ namespace api_pns.Controllers.Productos
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_consultProduct", connection);
+                    SqlCommand cmd = new SqlCommand("sp_consultSuppliers", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@id_product", idProduct));
+                    cmd.Parameters.Add(new SqlParameter("@id_suppliers", idSupplier));
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
 
                     SqlDataReader sqldr = await cmd.ExecuteReaderAsync();
 
-                    ProductsConsultModel detailProducts = new ProductsConsultModel();
+                    SuppliersConsultModel detailSuppliers = new SuppliersConsultModel();
 
                     while (await sqldr.ReadAsync())
                     {
-                        if (sqldr["id_product"] != DBNull.Value) { detailProducts.idProduct = Convert.ToInt32(sqldr["id_product"]); } else { detailProducts.idProduct = 0; }
-                        if (sqldr["name"] != DBNull.Value) { detailProducts.name = sqldr["name"].ToString(); } else { detailProducts.name = ""; }
-                        if (sqldr["id_suppliers"] != DBNull.Value) { detailProducts.idSuppliers = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailProducts.idSuppliers = 0; }
+                        if (sqldr["id_suppliers"] != DBNull.Value) { detailSuppliers.idSupplier = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailSuppliers.idSupplier = 0; }
+                        if (sqldr["name"] != DBNull.Value) { detailSuppliers.name = sqldr["name"].ToString(); } else { detailSuppliers.name = ""; }
                     }
 
                     await sqldr.CloseAsync();
@@ -155,8 +153,8 @@ namespace api_pns.Controllers.Productos
 
                     if (r.Flag)
                     {
-                        r.Data = detailProducts;
-                        r.Message = "Successful products";
+                        r.Data = detailSuppliers;
+                        r.Message = "Successful suppliers";
                         r.Status = 200;
 
                         oReply.Ok = true;
@@ -185,19 +183,19 @@ namespace api_pns.Controllers.Productos
         }
         #endregion
 
-        #region Crear o actualizar productos
-        // POST: api/createUpdateProduct
+        #region Crear o actualizar proveedores
+        // POST: api/createUpdateSupplier
         /// <summary>
-        /// Crear/Actualizar ciudad
+        /// Crear/Actualizar proveedor
         /// </summary>
         /// <remarks>
-        /// Método que permite crear/actualizar una ciudad
+        /// Método que permite crear/actualizar un proveedor
         /// </remarks>
-        /// <param name="product">Codigo y nombre del producto, e identificador del proveedor asociado al producto</param>
+        /// <param name="supplier">Codigo y nombre de la ciudad, e identificador del pais asociado a la ciudad</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpPost]
-        [Route("createUpdateProduct")]
-        public async Task<IActionResult> createUpdateProduct([FromBody] ProductsCreateUpdateModel product)
+        [Route("createUpdateSupplier")]
+        public async Task<IActionResult> createUpdateSupplier([FromBody] SuppliersCreateUpdateModel supplier)
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -207,14 +205,14 @@ namespace api_pns.Controllers.Productos
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_createUpdateProducts", connection);
+                    SqlCommand cmd = new SqlCommand("sp_createUpdateSuppliers", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@id_product", product.idProduct));
-                    cmd.Parameters.Add(new SqlParameter("@id_suppliers", product.idSuppliers));
-                    cmd.Parameters.Add(new SqlParameter("@name", product.name));
-                    cmd.Parameters.Add(new SqlParameter("@price", product.price));
-                    cmd.Parameters.Add(new SqlParameter("@amount", product.amount));
+                    cmd.Parameters.Add(new SqlParameter("@id_suppliers", supplier.idSupplier));
+                    cmd.Parameters.Add(new SqlParameter("@nit", supplier.nit));
+                    cmd.Parameters.Add(new SqlParameter("@name", supplier.name));
+                    cmd.Parameters.Add(new SqlParameter("@email", supplier.email));
+                    cmd.Parameters.Add(new SqlParameter("@telephone", supplier.telephone));
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
 

@@ -3,41 +3,39 @@ using api_pns.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.Data;
-using System;
 using System.Data.SqlClient;
+using System.Data;
 using System.Threading.Tasks;
-using api_pns.Models.Menu;
+using System;
 
-namespace api_pns.Controllers.Menu
+namespace api_pns.Controllers.Recaudo
 {
     [Route("api")]
     [ApiController]
-    public class MenuController : ControllerBase
+    public class RecaudoController : Controller
     {
         public Connection conn;
         private readonly IConfiguration _configuration;
         public ReplySucess oReply = new ReplySucess();
 
-        public MenuController(IConfiguration configuration)
+        public RecaudoController(IConfiguration configuration)
         {
             _configuration = configuration;
             conn = new Connection();
         }
 
-        #region Menu
-        // GET: api/Menu/{idRole}
+        #region Listar ordenes para recaudo
+        // GET: api/listOrdersPay
         /// <summary>
-        /// Menu
+        /// Listar ordenes en recaudo
         /// </summary>
         /// <remarks>
-        /// Método para consultar menu segun el rol del usuario
+        /// Método para listar ordenes en recaudo
         /// </remarks>
-        /// <param name="idRole">Rol del usuario</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpGet]
-        [Route("menu/{idRole}")]
-        public async Task<IActionResult> Menu([FromRoute] int idRole)
+        [Route("listOrdersPay")]
+        public async Task<IActionResult> listOrdersPay()
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -47,43 +45,38 @@ namespace api_pns.Controllers.Menu
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_menu", connection);
+                    SqlCommand cmd = new SqlCommand("sp_listOrdersPay", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@id_role", idRole));
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
 
                     SqlDataReader sqldr = await cmd.ExecuteReaderAsync();
 
-                    List<MenuModel> detailMenu = new List<MenuModel>();
+                    List<Dictionary<string, object>> details = new List<Dictionary<string, object>>();
 
                     while (await sqldr.ReadAsync())
                     {
-                        MenuModel detailMenu2 = new MenuModel();
-                        if (sqldr["id_permission"] != DBNull.Value) { detailMenu2.idPermission = Convert.ToInt32(sqldr["id_permission"]); } else { detailMenu2.idPermission = 0; }
-                        if (sqldr["id_role"] != DBNull.Value) { detailMenu2.idRole = Convert.ToInt32(sqldr["id_role"]); } else { detailMenu2.idRole = 0; }
-                        if (sqldr["id_menu"] != DBNull.Value) { detailMenu2.idMenu = Convert.ToInt32(sqldr["id_menu"]); } else { detailMenu2.idMenu = 0; }
-                        if (sqldr["name"] != DBNull.Value) { detailMenu2.name = sqldr["name"].ToString(); } else { detailMenu2.name = ""; }
-                        if (sqldr["permission"] != DBNull.Value) { detailMenu2.permission = Convert.ToBoolean(sqldr["permission"]); } else { detailMenu2.permission = false; }
+                        Dictionary<string, object> data = new Dictionary<string, object>();
+                        if (sqldr["id_take_order"] != DBNull.Value) { data.Add("idTakeOrder", Convert.ToInt32(sqldr["id_take_order"])); } else { data.Add("idTakeOrder", ""); }
+                        if (sqldr["id_table"] != DBNull.Value) { data.Add("idTable", Convert.ToInt32(sqldr["id_table"])); } else { data.Add("idTable", ""); }
+                        if (sqldr["name"] != DBNull.Value) { data.Add("name", sqldr["name"].ToString()); } else { data.Add("name", ""); }
+                        if (sqldr["totalValue"] != DBNull.Value) { data.Add("totalValue", sqldr["totalValue"].ToString()); } else { data.Add("totalValue", ""); }
+                        if (sqldr["paid"] != DBNull.Value) { data.Add("paid", Convert.ToBoolean(sqldr["paid"])); } else { data.Add("paid", ""); }
 
-                        detailMenu.Add(detailMenu2);
+                        details.Add(data);
                     }
 
                     await sqldr.CloseAsync();
 
                     r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
-                    r.Status = 400;
+                    r.Status = r.Flag ? 200 : 400;
 
 
-                    if (r.Flag)
+                    if (r.Flag == true)
                     {
-                        Dictionary<string, object> detailsMenu = new Dictionary<string, object>();
-                        detailsMenu.Add("menu", detailMenu);
-
-                        r.Data = detailsMenu;
-                        r.Message = "Successful menu";
+                        r.Data = details;
                         r.Status = 200;
 
                         oReply.Ok = true;
