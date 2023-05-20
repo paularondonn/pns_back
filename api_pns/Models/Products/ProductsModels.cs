@@ -14,7 +14,9 @@
     {
         public int idProduct { get; set; }
         public string name { get; set; }
-        public int idSuppliers { get; set; }
+        public string price { get; set; }
+        public string amount { get; set; }
+        public int idSupplier { get; set; }
 
     }
 

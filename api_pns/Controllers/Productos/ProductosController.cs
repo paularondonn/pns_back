@@ -145,7 +145,9 @@ namespace api_pns.Controllers.Productos
                     {
                         if (sqldr["id_product"] != DBNull.Value) { detailProducts.idProduct = Convert.ToInt32(sqldr["id_product"]); } else { detailProducts.idProduct = 0; }
                         if (sqldr["name"] != DBNull.Value) { detailProducts.name = sqldr["name"].ToString(); } else { detailProducts.name = ""; }
-                        if (sqldr["id_suppliers"] != DBNull.Value) { detailProducts.idSuppliers = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailProducts.idSuppliers = 0; }
+                        if (sqldr["price"] != DBNull.Value) { detailProducts.price = sqldr["price"].ToString(); } else { detailProducts.price = ""; }
+                        if (sqldr["amount"] != DBNull.Value) { detailProducts.amount = sqldr["amount"].ToString(); } else { detailProducts.amount = ""; }
+                        if (sqldr["id_suppliers"] != DBNull.Value) { detailProducts.idSupplier = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailProducts.idSupplier = 0; }
                     }
 
                     await sqldr.CloseAsync();
@@ -190,10 +192,10 @@ namespace api_pns.Controllers.Productos
         #region Crear o actualizar productos
         // POST: api/createUpdateProduct
         /// <summary>
-        /// Crear/Actualizar ciudad
+        /// Crear/Actualizar productos
         /// </summary>
         /// <remarks>
-        /// Método que permite crear/actualizar una ciudad
+        /// Método que permite crear/actualizar un producto
         /// </remarks>
         /// <param name="product">Codigo y nombre del producto, e identificador del proveedor asociado al producto</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>

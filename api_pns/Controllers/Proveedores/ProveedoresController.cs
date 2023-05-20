@@ -197,7 +197,7 @@ namespace api_pns.Controllers.Proveedores
         /// <remarks>
         /// Método que permite crear/actualizar un proveedor
         /// </remarks>
-        /// <param name="supplier">Codigo y nombre de la ciudad, e identificador del pais asociado a la ciudad</param>
+        /// <param name="supplier">Codigo y nombre del proveedor, e identificador el producto asociado al proveedor</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpPost]
         [Route("createUpdateSupplier")]
