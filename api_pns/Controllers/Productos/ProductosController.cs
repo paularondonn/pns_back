@@ -213,7 +213,7 @@ namespace api_pns.Controllers.Productos
 
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add(new SqlParameter("@id_product", product.idProduct));
-                    cmd.Parameters.Add(new SqlParameter("@id_suppliers", product.idSuppliers));
+                    cmd.Parameters.Add(new SqlParameter("@id_suppliers", product.idSupplier));
                     cmd.Parameters.Add(new SqlParameter("@name", product.name));
                     cmd.Parameters.Add(new SqlParameter("@price", product.price));
                     cmd.Parameters.Add(new SqlParameter("@amount", product.amount));
