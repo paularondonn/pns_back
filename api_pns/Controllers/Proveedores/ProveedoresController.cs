@@ -1,44 +1,44 @@
 ﻿using api_pns.Context;
 using api_pns.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
-using System;
 using System.Threading.Tasks;
-using api_pns.Models.Countries;
+using System;
+using api_pns.Models.Suppliers;
+using Microsoft.AspNetCore.Rewrite;
+using System.Runtime.InteropServices;
 
-namespace api_pns.Controllers.Paises
+namespace api_pns.Controllers.Proveedores
 {
     [Route("api")]
     [ApiController]
-    public class PaisesController : ControllerBase
+    public class SuppliersController : ControllerBase
     {
-
         public Connection conn;
         private readonly IConfiguration _configuration;
         public ReplySucess oReply = new ReplySucess();
 
-        public PaisesController(IConfiguration configuration)
+        public SuppliersController(IConfiguration configuration)
         {
             _configuration = configuration;
             conn = new Connection();
         }
 
-        #region Listar paises
-        // GET: api/listCountries
+        #region Listar proveedores
+        // GET: api/listSuppliers
         /// <summary>
-        /// Listar paises
+        /// Listar proveedores
         /// </summary>
         /// <remarks>
-        /// Método para consultar paises
+        /// Método para listar los proveedores
         /// </remarks>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpGet]
-        [Route("listCountries")]
-        public async Task<IActionResult> listCountries()
+        [Route("listSuppliers")]
+        public async Task<IActionResult> listSuppliers()
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -48,7 +48,7 @@ namespace api_pns.Controllers.Paises
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_listCountries", connection);
+                    SqlCommand cmd = new SqlCommand("sp_listSuppliers", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
@@ -56,15 +56,18 @@ namespace api_pns.Controllers.Paises
 
                     SqlDataReader sqldr = await cmd.ExecuteReaderAsync();
 
-                    List<CountriesModel> detailCountries = new List<CountriesModel>();
+                    List<SuppliersModel> detailSuppliers = new List<SuppliersModel>();
 
                     while (await sqldr.ReadAsync())
                     {
-                        CountriesModel detailCountries2 = new CountriesModel();
-                        if (sqldr["id_country"] != DBNull.Value) { detailCountries2.idCountry = Convert.ToInt32(sqldr["id_country"]); } else { detailCountries2.idCountry = 0; }
-                        if (sqldr["name"] != DBNull.Value) { detailCountries2.name = sqldr["name"].ToString(); } else { detailCountries2.name = ""; }
+                        SuppliersModel detailSuppliers2 = new SuppliersModel();
+                        if (sqldr["id_suppliers"] != DBNull.Value) { detailSuppliers2.idSupplier = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailSuppliers2.idSupplier = 0; }
+                        if (sqldr["name"] != DBNull.Value) { detailSuppliers2.name = sqldr["name"].ToString(); } else { detailSuppliers2.name = ""; }
+                        if (sqldr["nit"] != DBNull.Value) { detailSuppliers2.nit = sqldr["nit"].ToString(); } else { detailSuppliers2.nit = ""; }
+                        if (sqldr["email"] != DBNull.Value) { detailSuppliers2.email = sqldr["email"].ToString(); } else { detailSuppliers2.email = ""; }
+                        if (sqldr["telephone"] != DBNull.Value) { detailSuppliers2.telephone = sqldr["telephone"].ToString(); } else { detailSuppliers2.telephone = ""; }
 
-                        detailCountries.Add(detailCountries2);
+                        detailSuppliers.Add(detailSuppliers2);
                     }
 
                     await sqldr.CloseAsync();
@@ -73,11 +76,10 @@ namespace api_pns.Controllers.Paises
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
                     r.Status = r.Flag ? 200 : 400;
 
-
-                    if (r.Flag)
+                    if (r.Flag == true)
                     {
-                        r.Data = detailCountries;
-                        r.Message = "Successful countries";
+                        r.Data = detailSuppliers;
+                        r.Message = "Successful Suppliers";
                         r.Status = 200;
 
                         oReply.Ok = true;
@@ -106,19 +108,19 @@ namespace api_pns.Controllers.Paises
         }
         #endregion
 
-        #region Detalle pais
-        // GET: api/consultCountries/{idCountry}
+        #region Consultar detalle proveedores
+        // GET: api/consultSuppliers/{idSupplier}
         /// <summary>
-        /// Detalle pais
+        /// Consultar detalle del proveedor 
         /// </summary>
         /// <remarks>
-        /// Método para obtener detalle del pais
+        /// Método para consultar proveedor
         /// </remarks>
-        /// <param name="idCountry">Identificador del pais a consultar</param>
+        /// <param name="idSupplier">Identificador del proveedor a consultar</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpGet]
-        [Route("consultCountries/{idCountry}")]
-        public async Task<IActionResult> consultCountries([FromRoute] int idCountry)
+        [Route("consultSuppliers/{idSupplier}")]
+        public async Task<IActionResult> consultSuppliers([FromRoute] int idSupplier)
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -128,34 +130,37 @@ namespace api_pns.Controllers.Paises
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_consultCountries", connection);
+                    SqlCommand cmd = new SqlCommand("sp_consultSuppliers", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@id_country", idCountry));
+                    cmd.Parameters.Add(new SqlParameter("@id_suppliers", idSupplier));
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
 
                     SqlDataReader sqldr = await cmd.ExecuteReaderAsync();
 
-                    CountriesModel detailCountries = new CountriesModel();
+                    SuppliersConsultModel detailSuppliers = new SuppliersConsultModel();
 
                     while (await sqldr.ReadAsync())
                     {
-                        if (sqldr["id_country"] != DBNull.Value) { detailCountries.idCountry = Convert.ToInt32(sqldr["id_country"]); } else { detailCountries.idCountry = 0; }
-                        if (sqldr["name"] != DBNull.Value) { detailCountries.name = sqldr["name"].ToString(); } else { detailCountries.name = ""; }
+                        if (sqldr["id_suppliers"] != DBNull.Value) { detailSuppliers.idSupplier = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailSuppliers.idSupplier = 0; }
+                        if (sqldr["nit"] != DBNull.Value) { detailSuppliers.nit = sqldr["nit"].ToString(); } else { detailSuppliers.nit = ""; }
+                        if (sqldr["name"] != DBNull.Value) { detailSuppliers.name = sqldr["name"].ToString(); } else { detailSuppliers.name = ""; }
+                        if (sqldr["email"] != DBNull.Value) { detailSuppliers.email = sqldr["email"].ToString(); } else { detailSuppliers.email = ""; }
+                        if (sqldr["telephone"] != DBNull.Value) { detailSuppliers.telephone = sqldr["telephone"].ToString(); } else { detailSuppliers.telephone = ""; }
                     }
 
                     await sqldr.CloseAsync();
 
                     r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
                     r.Flag = (bool)cmd.Parameters["@flag"].Value;
-                    r.Status = r.Flag ? 200 : 400;
+                    r.Status = 400;
 
 
                     if (r.Flag)
                     {
-                        r.Data = detailCountries;
-                        r.Message = "Successful countries";
+                        r.Data = detailSuppliers;
+                        r.Message = "Successful suppliers";
                         r.Status = 200;
 
                         oReply.Ok = true;
@@ -184,19 +189,19 @@ namespace api_pns.Controllers.Paises
         }
         #endregion
 
-        #region Crear o actualizar paises
-        // POST: api/createUpdateCountry
+        #region Crear o actualizar proveedores
+        // POST: api/createUpdateSupplier
         /// <summary>
-        /// Crear/Actualizar pais
+        /// Crear/Actualizar proveedor
         /// </summary>
         /// <remarks>
-        /// Método para crear o actualizar paises.
+        /// Método que permite crear/actualizar un proveedor
         /// </remarks>
-        /// <param name="country">Codigo y nombre del país</param>
+        /// <param name="supplier">Codigo y nombre de la ciudad, e identificador del pais asociado a la ciudad</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpPost]
-        [Route("createUpdateCountry")]
-        public async Task<IActionResult> createUpdateCountry([FromBody] CountriesCreateUpdateModel country)
+        [Route("createUpdateSupplier")]
+        public async Task<IActionResult> createUpdateSupplier([FromBody] SuppliersCreateUpdateModel supplier)
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -206,11 +211,14 @@ namespace api_pns.Controllers.Paises
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_createUpdateCountry", connection);
+                    SqlCommand cmd = new SqlCommand("sp_createUpdateSuppliers", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@id_country", country.idCountry));
-                    cmd.Parameters.Add(new SqlParameter("@name", country.name));
+                    cmd.Parameters.Add(new SqlParameter("@id_suppliers", supplier.idSupplier));
+                    cmd.Parameters.Add(new SqlParameter("@nit", supplier.nit));
+                    cmd.Parameters.Add(new SqlParameter("@name", supplier.name));
+                    cmd.Parameters.Add(new SqlParameter("@email", supplier.email));
+                    cmd.Parameters.Add(new SqlParameter("@telephone", supplier.telephone));
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
 
@@ -222,7 +230,7 @@ namespace api_pns.Controllers.Paises
 
                     if (r.Flag)
                     {
-                        oReply.Ok = r.Flag;
+                        oReply.Ok = r.Flag == true ? true : false;
                         oReply.Message = r.Message;
                         oReply.Data = null;
 

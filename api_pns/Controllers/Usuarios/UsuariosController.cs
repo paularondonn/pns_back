@@ -1,43 +1,43 @@
-﻿using api_pns.Context;
+﻿using Microsoft.AspNetCore.Mvc;
+using api_pns.Context;
 using api_pns.Models;
-using api_pns.Models.Cities;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
-using System.Threading.Tasks;
 using System;
-using api_pns.Models.Tables;
+using System.Threading.Tasks;
+using api_pns.Models.Users;
 
-namespace api_pns.Controllers.Mesas
+namespace api_pns.Controllers.Usuarios
 {
     [Route("api")]
     [ApiController]
-    public class MesasController : Controller
+    public class UsuariosController : Controller
     {
-        public Connection conn;
+        public Connection conn; 
         private readonly IConfiguration _configuration;
         public ReplySucess oReply = new ReplySucess();
 
-        public MesasController(IConfiguration configuration)
+        public UsuariosController(IConfiguration configuration)
         {
             _configuration = configuration;
             conn = new Connection();
         }
 
-        #region Listar mesas
-        // GET: api/listTables
+        #region Listar usuarios
+        // GET: api/listUsers
         /// <summary>
-        /// Listar mesas
+        /// Listar usuarios
         /// </summary>
         /// <remarks>
-        /// Método para listar las mesas
+        /// Método para consultar usuarios
         /// </remarks>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpGet]
-        [Route("listTables")]
-        public async Task<IActionResult> listTables()
+        [Route("listUsers")]
+        public async Task<IActionResult> listUsers()
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -47,7 +47,7 @@ namespace api_pns.Controllers.Mesas
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_listTables", connection);
+                    SqlCommand cmd = new SqlCommand("sp_listUsers", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
@@ -55,98 +55,24 @@ namespace api_pns.Controllers.Mesas
 
                     SqlDataReader sqldr = await cmd.ExecuteReaderAsync();
 
-                    List<TablesModel> detailCities = new List<TablesModel>();
+                    List<Dictionary<string, object>> details = new List<Dictionary<string, object>>();
 
                     while (await sqldr.ReadAsync())
                     {
-                        TablesModel detailCities2 = new TablesModel();
-                        if (sqldr["id_table"] != DBNull.Value) { detailCities2.idTable = Convert.ToInt32(sqldr["id_table"]); } else { detailCities2.idTable = 0; }
-                        if (sqldr["country_name"] != DBNull.Value) { detailCities2.nameCountry = sqldr["country_name"].ToString(); } else { detailCities2.nameCountry = ""; }
-                        if (sqldr["city_name"] != DBNull.Value) { detailCities2.nameCity = sqldr["city_name"].ToString(); } else { detailCities2.nameCity = ""; }
-                        if (sqldr["headquarter_name"] != DBNull.Value) { detailCities2.nameHeadquarters = sqldr["headquarter_name"].ToString(); } else { detailCities2.nameHeadquarters = ""; }
-                        if (sqldr["name"] != DBNull.Value) { detailCities2.name = sqldr["name"].ToString(); } else { detailCities2.name = ""; }
+                        Dictionary<string, object> data = new Dictionary<string, object>();
+                        if (sqldr["id_user"] != DBNull.Value) { data.Add("idUser", Convert.ToInt32(sqldr["id_user"])); } else { data.Add("idUser", ""); }
+                        if (sqldr["type_document"] != DBNull.Value) { data.Add("typeDocument", sqldr["type_document"].ToString()); } else { data.Add("typeDocument", ""); }
+                        if (sqldr["prefix"] != DBNull.Value) { data.Add("prefix", sqldr["prefix"].ToString()); } else { data.Add("prefix", ""); }
+                        if (sqldr["document_number"] != DBNull.Value) { data.Add("documentNumber", sqldr["document_number"].ToString()); } else { data.Add("documentNumber", ""); }
+                        if (sqldr["names"] != DBNull.Value) { data.Add("names", sqldr["names"].ToString()); } else { data.Add("names", ""); }
+                        if (sqldr["surnames"] != DBNull.Value) { data.Add("surnames", sqldr["surnames"].ToString()); } else { data.Add("surnames", ""); }
+                        if (sqldr["name_user"] != DBNull.Value) { data.Add("nameUser", sqldr["name_user"].ToString()); } else { data.Add("nameUser", ""); }
+                        if (sqldr["birth_date"] != DBNull.Value) { data.Add("birthDate", Convert.ToDateTime(sqldr["birth_date"])); } else { data.Add("birthDate", ""); }
+                        if (sqldr["name_conuntry"] != DBNull.Value) { data.Add("nameConuntry", sqldr["name_conuntry"].ToString()); } else { data.Add("nameConuntry", ""); }
+                        if (sqldr["name_city"] != DBNull.Value) { data.Add("nameCity", sqldr["name_city"].ToString()); } else { data.Add("nameCity", ""); }
+                        if (sqldr["name_role"] != DBNull.Value) { data.Add("nameRole", sqldr["name_role"].ToString()); } else { data.Add("nameRole", ""); }
 
-                        detailCities.Add(detailCities2);
-                    }
-
-                    await sqldr.CloseAsync();
-
-                    r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
-                    r.Flag = (bool)cmd.Parameters["@flag"].Value;
-                    r.Status = r.Flag ? 200 : 400;
-
-
-                    if (r.Flag == true)
-                    {
-                        r.Data = detailCities;
-                        r.Status = 200;
-
-                        oReply.Ok = true;
-                        oReply.Message = r.Message;
-                        oReply.Data = r.Data;
-
-                        return Ok(oReply);
-                    }
-                    else
-                    {
-                        oReply.Ok = false;
-                        oReply.Message = r.Message;
-                        oReply.Data = null;
-
-                        return BadRequest(oReply);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    oReply.Ok = false;
-                    oReply.Message = ex.Message;
-                    oReply.Data = null;
-                    return BadRequest(oReply);
-                }
-            }
-        }
-        #endregion
-
-        #region Consultar mesas segun la sede
-        // GET: api/listTablesHeadquarters/{idHeadquarters}
-        /// <summary>
-        /// Consultar ciudades
-        /// </summary>
-        /// <remarks>
-        /// Método para consultar las ciudades segun el pais
-        /// </remarks>
-        /// <param name="idHeadquarters">Identificador de la sede para consultar mesas</param>
-        /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
-        [HttpGet]
-        [Route("listTablesHeadquarters/{idHeadquarters}")]
-        public async Task<IActionResult> consultCitiesCountry([FromRoute] int idHeadquarters)
-        {
-            using (SqlConnection connection = conn.ConnectBD(_configuration))
-            {
-                ReplyLogin r = new ReplyLogin();
-
-                try
-                {
-                    await connection.OpenAsync();
-
-                    SqlCommand cmd = new SqlCommand("sp_listTablesHeadquarters", connection);
-
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@id_headquarters", idHeadquarters));
-                    cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
-                    cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
-
-                    SqlDataReader sqldr = await cmd.ExecuteReaderAsync();
-
-                    List<TablesConsultModel> detail = new List<TablesConsultModel>();
-
-                    while (await sqldr.ReadAsync())
-                    {
-                        TablesConsultModel detail2 = new TablesConsultModel();
-                        if (sqldr["id_table"] != DBNull.Value) { detail2.idTable = Convert.ToInt32(sqldr["id_table"]); } else { detail2.idTable = 0; }
-                        if (sqldr["name"] != DBNull.Value) { detail2.name = sqldr["name"].ToString(); } else { detail2.name = ""; }
-
-                        detail.Add(detail2);
+                        details.Add(data);
                     }
 
                     await sqldr.CloseAsync();
@@ -158,7 +84,8 @@ namespace api_pns.Controllers.Mesas
 
                     if (r.Flag)
                     {
-                        r.Data = detail;
+                        r.Data = details;
+                        r.Message = "Successful countries";
                         r.Status = 200;
 
                         oReply.Ok = true;
@@ -187,19 +114,19 @@ namespace api_pns.Controllers.Mesas
         }
         #endregion
 
-        #region Consultar detalle mesa
-        // GET: api/consultTable/{idTable}
+        #region Detalle de usuarios
+        // GET: api/consultUser/{idUser}
         /// <summary>
-        /// Consultar detalle de la ciudad
+        /// Detalle usuario
         /// </summary>
         /// <remarks>
-        /// Método para consultar ciudad
+        /// Método para obtener detalle del usuario
         /// </remarks>
-        /// <param name="idCity">Identificador de la ciudad a consultar</param>
+        /// <param name="idUser">Identificador del usuario</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpGet]
-        [Route("consultTable/{idTable}")]
-        public async Task<IActionResult> consultTable([FromRoute] int idTable)
+        [Route("consultUser/{idUser}")]
+        public async Task<IActionResult> consultUser([FromRoute] int idUser)
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -209,23 +136,29 @@ namespace api_pns.Controllers.Mesas
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_detailTables", connection);
+                    SqlCommand cmd = new SqlCommand("sp_consultUser", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@id_table", idTable));
+                    cmd.Parameters.Add(new SqlParameter("@id_user", idUser));
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
 
                     SqlDataReader sqldr = await cmd.ExecuteReaderAsync();
 
-                    TablesConsultModel detail = new TablesConsultModel();
+                    Dictionary<string, object> data = new Dictionary<string, object>();
 
                     while (await sqldr.ReadAsync())
                     {
-                        if (sqldr["id_country"] != DBNull.Value) { detail.idCountry = Convert.ToInt32(sqldr["id_country"]); } else { detail.idCountry = 0; }
-                        if (sqldr["id_city"] != DBNull.Value) { detail.idCity = Convert.ToInt32(sqldr["id_city"]); } else { detail.idCity = 0; }
-                        if (sqldr["id_headquarters"] != DBNull.Value) { detail.idHeadquarters = Convert.ToInt32(sqldr["id_headquarters"]); } else { detail.idHeadquarters = 0; }
-                        if (sqldr["name"] != DBNull.Value) { detail.name = sqldr["name"].ToString(); } else { detail.name = ""; }
+                        if (sqldr["id_user"] != DBNull.Value) { data.Add("idUser", Convert.ToInt32(sqldr["id_user"])); } else { data.Add("idUser", ""); }
+                        if (sqldr["id_document_type"] != DBNull.Value) { data.Add("idDocumentType", Convert.ToInt32(sqldr["id_document_type"])); } else { data.Add("idDocumentType", ""); }
+                        if (sqldr["document_number"] != DBNull.Value) { data.Add("documentNumber", sqldr["document_number"].ToString()); } else { data.Add("documentNumber", ""); }
+                        if (sqldr["names"] != DBNull.Value) { data.Add("names", sqldr["names"].ToString()); } else { data.Add("names", ""); }
+                        if (sqldr["surnames"] != DBNull.Value) { data.Add("surnames", sqldr["surnames"].ToString()); } else { data.Add("surnames", ""); }
+                        if (sqldr["name_user"] != DBNull.Value) { data.Add("nameUser", sqldr["name_user"].ToString()); } else { data.Add("nameUser", ""); }
+                        if (sqldr["birth_date"] != DBNull.Value) { data.Add("birthDate", Convert.ToDateTime(sqldr["birth_date"])); } else { data.Add("birthDate", ""); }
+                        if (sqldr["id_country"] != DBNull.Value) { data.Add("idCountry", Convert.ToInt32(sqldr["id_country"])); } else { data.Add("idCountry", ""); }
+                        if (sqldr["id_city"] != DBNull.Value) { data.Add("idCity", Convert.ToInt32(sqldr["id_city"])); } else { data.Add("idCity", ""); }
+                        if (sqldr["id_role"] != DBNull.Value) { data.Add("idRole", Convert.ToInt32(sqldr["id_role"])); } else { data.Add("idRole", ""); }
                     }
 
                     await sqldr.CloseAsync();
@@ -237,8 +170,7 @@ namespace api_pns.Controllers.Mesas
 
                     if (r.Flag)
                     {
-                        r.Data = detail;
-                        r.Status = 200;
+                        r.Data = data;
 
                         oReply.Ok = true;
                         oReply.Message = r.Message;
@@ -266,19 +198,19 @@ namespace api_pns.Controllers.Mesas
         }
         #endregion
 
-        #region Crear o actualizar ciudades
-        // POST: api/createUpdateTable
+        #region Crear o actualizar usuario
+        // POST: api/createUpdateUsers
         /// <summary>
-        /// Crear/Actualizar mesa
+        /// Crear/Actualizar usuario
         /// </summary>
         /// <remarks>
-        /// Método que me permite crear/actualizar las mesas registradas en el sistema
+        /// Método para crear o actualizar usuario.
         /// </remarks>
-        /// <param name="data">Sede y nombre de la mesa</param>
+        /// <param name="data">Data a validar en db</param>
         /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
         [HttpPost]
-        [Route("createUpdateTable")]
-        public async Task<IActionResult> createUpdateTable([FromBody] TablesCreateUpdateModel data)
+        [Route("createUpdateUsers")]
+        public async Task<IActionResult> createUpdateCountry([FromBody] UsersModel data)
         {
             using (SqlConnection connection = conn.ConnectBD(_configuration))
             {
@@ -288,12 +220,21 @@ namespace api_pns.Controllers.Mesas
                 {
                     await connection.OpenAsync();
 
-                    SqlCommand cmd = new SqlCommand("sp_createUpdateTables", connection);
+                    SqlCommand cmd = new SqlCommand("sp_createUpdateUsers", connection);
 
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add(new SqlParameter("@id_table", data.idTable));
-                    cmd.Parameters.Add(new SqlParameter("@id_headquarters", data.idHeadquarters));
-                    cmd.Parameters.Add(new SqlParameter("@name", data.name));
+                    cmd.Parameters.Add(new SqlParameter("@id_user", data.idUser));
+                    cmd.Parameters.Add(new SqlParameter("@document_number", data.documentNumber));
+                    cmd.Parameters.Add(new SqlParameter("@names", data.names));
+                    cmd.Parameters.Add(new SqlParameter("@surnames", data.surnames));
+                    cmd.Parameters.Add(new SqlParameter("@name_user", data.nameUser));
+                    cmd.Parameters.Add(new SqlParameter("@password", data.password));
+                    cmd.Parameters.Add(new SqlParameter("@birth_date", data.birthDate));
+                    cmd.Parameters.Add(new SqlParameter("@id_document_type", data.idDocumentType));
+                    cmd.Parameters.Add(new SqlParameter("@id_country", data.idCountry));
+                    cmd.Parameters.Add(new SqlParameter("@id_city", data.idCity));
+                    cmd.Parameters.Add(new SqlParameter("@id_role", data.idRole));
+
                     cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
 
@@ -305,7 +246,7 @@ namespace api_pns.Controllers.Mesas
 
                     if (r.Flag)
                     {
-                        oReply.Ok = true;
+                        oReply.Ok = r.Flag;
                         oReply.Message = r.Message;
                         oReply.Data = null;
 
@@ -319,8 +260,71 @@ namespace api_pns.Controllers.Mesas
 
                         return BadRequest(oReply);
                     }
+                }
+                catch (Exception ex)
+                {
+                    oReply.Ok = false;
+                    oReply.Message = ex.Message;
+                    oReply.Data = null;
+                    return BadRequest(oReply);
+                }
+            }
+        }
+        #endregion
 
+        #region Actualizar contraseña
+        // POST: api/updatePassword
+        /// <summary>
+        /// Actualizar contraseña de usuario
+        /// </summary>
+        /// <remarks>
+        /// Método para actualizar contraseña de usuario.
+        /// </remarks>
+        /// <param name="data">Data a validar en db</param>
+        /// <response code="401">Unauthorized. No se ha indicado o es incorrecto el token JWT de acceso</response>
+        [HttpPost]
+        [Route("updatePassword")]
+        public async Task<IActionResult> updatePassword([FromBody] UserPasswordModel data)
+        {
+            using (SqlConnection connection = conn.ConnectBD(_configuration))
+            {
+                ReplyLogin r = new ReplyLogin();
 
+                try
+                {
+                    await connection.OpenAsync();
+
+                    SqlCommand cmd = new SqlCommand("sp_updatePassword", connection);
+
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("@id_user", data.idUser));
+                    cmd.Parameters.Add(new SqlParameter("@password", data.password));
+
+                    cmd.Parameters.Add("@message", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
+                    cmd.Parameters.Add("@flag", SqlDbType.Bit).Direction = ParameterDirection.Output;
+
+                    await cmd.ExecuteNonQueryAsync();
+
+                    r.Message = cmd.Parameters["@message"].Value != null ? cmd.Parameters["@message"].Value.ToString() : "";
+                    r.Flag = (bool)cmd.Parameters["@flag"].Value;
+                    r.Status = r.Flag == true ? 200 : 400;
+
+                    if (r.Flag)
+                    {
+                        oReply.Ok = r.Flag;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
+
+                        return Ok(oReply);
+                    }
+                    else
+                    {
+                        oReply.Ok = false;
+                        oReply.Message = r.Message;
+                        oReply.Data = null;
+
+                        return BadRequest(oReply);
+                    }
                 }
                 catch (Exception ex)
                 {
