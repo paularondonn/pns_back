@@ -63,7 +63,9 @@ namespace api_pns.Controllers.Productos
                         ProductsModel detailProducts2 = new ProductsModel();
                         if (sqldr["id_product"] != DBNull.Value) { detailProducts2.idProduct = Convert.ToInt32(sqldr["id_product"]); } else { detailProducts2.idProduct = 0; }
                         if (sqldr["name"] != DBNull.Value) { detailProducts2.name = sqldr["name"].ToString(); } else { detailProducts2.name = ""; }
-                        if (sqldr["supplier_name"] != DBNull.Value) { detailProducts2.supplierName = sqldr["supplier_name"].ToString(); } else { detailProducts2.supplierName = ""; }
+                        if (sqldr["price"] != DBNull.Value) { detailProducts2.price = sqldr["price"].ToString(); } else { detailProducts2.price = ""; }
+                        if (sqldr["amount"] != DBNull.Value) { detailProducts2.amount = sqldr["amount"].ToString(); } else { detailProducts2.amount = ""; }
+                        if (sqldr["name_supplier"] != DBNull.Value) { detailProducts2.Namesupplier = sqldr["name_supplier"].ToString(); } else { detailProducts2.Namesupplier = ""; }
 
                         detailProducts.Add(detailProducts2);
                     }
@@ -98,7 +100,7 @@ namespace api_pns.Controllers.Productos
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
@@ -177,7 +179,7 @@ namespace api_pns.Controllers.Productos
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
@@ -244,7 +246,7 @@ namespace api_pns.Controllers.Productos
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }

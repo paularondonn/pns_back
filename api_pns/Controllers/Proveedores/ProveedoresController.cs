@@ -63,6 +63,9 @@ namespace api_pns.Controllers.Proveedores
                         SuppliersModel detailSuppliers2 = new SuppliersModel();
                         if (sqldr["id_suppliers"] != DBNull.Value) { detailSuppliers2.idSupplier = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailSuppliers2.idSupplier = 0; }
                         if (sqldr["name"] != DBNull.Value) { detailSuppliers2.name = sqldr["name"].ToString(); } else { detailSuppliers2.name = ""; }
+                        if (sqldr["nit"] != DBNull.Value) { detailSuppliers2.nit = sqldr["nit"].ToString(); } else { detailSuppliers2.nit = ""; }
+                        if (sqldr["email"] != DBNull.Value) { detailSuppliers2.email = sqldr["email"].ToString(); } else { detailSuppliers2.email = ""; }
+                        if (sqldr["telephone"] != DBNull.Value) { detailSuppliers2.telephone = sqldr["telephone"].ToString(); } else { detailSuppliers2.telephone = ""; }
 
                         detailSuppliers.Add(detailSuppliers2);
                     }
@@ -97,7 +100,7 @@ namespace api_pns.Controllers.Proveedores
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
@@ -141,7 +144,10 @@ namespace api_pns.Controllers.Proveedores
                     while (await sqldr.ReadAsync())
                     {
                         if (sqldr["id_suppliers"] != DBNull.Value) { detailSuppliers.idSupplier = Convert.ToInt32(sqldr["id_suppliers"]); } else { detailSuppliers.idSupplier = 0; }
+                        if (sqldr["nit"] != DBNull.Value) { detailSuppliers.nit = sqldr["nit"].ToString(); } else { detailSuppliers.nit = ""; }
                         if (sqldr["name"] != DBNull.Value) { detailSuppliers.name = sqldr["name"].ToString(); } else { detailSuppliers.name = ""; }
+                        if (sqldr["email"] != DBNull.Value) { detailSuppliers.email = sqldr["email"].ToString(); } else { detailSuppliers.email = ""; }
+                        if (sqldr["telephone"] != DBNull.Value) { detailSuppliers.telephone = sqldr["telephone"].ToString(); } else { detailSuppliers.telephone = ""; }
                     }
 
                     await sqldr.CloseAsync();
@@ -175,7 +181,7 @@ namespace api_pns.Controllers.Proveedores
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
@@ -242,7 +248,7 @@ namespace api_pns.Controllers.Proveedores
                 catch (Exception ex)
                 {
                     oReply.Ok = false;
-                    oReply.Message = r.Message;
+                    oReply.Message = ex.Message;
                     oReply.Data = null;
                     return BadRequest(oReply);
                 }
