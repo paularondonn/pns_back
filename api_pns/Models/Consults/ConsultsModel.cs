@@ -1,6 +1,6 @@
-﻿namespace api_pns.Models.Headquarters
+﻿namespace api_pns.Models.Consults
 {
-    public class HeadquartersModel
+    public class ConsultsModel
     {
         public int idHeadquarters { get; set; }
         public string? countryName { get; set; }
